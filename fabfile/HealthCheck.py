@@ -49,6 +49,8 @@ class HealthCheck:
                 for line in result:
                     result_line_list = line.split("\t")
                     print(result_line_list[5])
+                    if result_line_list[3] not in self.client_list:
+                        break
                     current_client_name = self.client_list[result_line_list[3]]
                     print("current client : " + current_client_name)
                     now = datetime.datetime.now()
