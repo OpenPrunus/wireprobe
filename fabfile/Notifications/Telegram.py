@@ -8,8 +8,8 @@ class Telegram:
     """
     Telegram notification class
     """
-    connect_alert = "🐉 Wireguard: {} is now connected"
-    disconnect_alert = "🐉 Wireguard: {} is now disconnected"
+    connect_alert = "🐉 Wireguard: {client_name} is now connected"
+    disconnect_alert = "🐉 Wireguard: {client_name} is now disconnected"
     parse_mode = "MarkdownV2"
     bot_token = ""
     chat_id = ""
@@ -45,7 +45,7 @@ class Telegram:
         :param client_name: Name of the client ti display
         :return:
         """
-        self.send_notification(self.connect_alert.format(client_name))
+        self.send_notification(self.connect_alert.format(client_name=client_name))
 
     def notify_disconnected(self, client_name):
         """
@@ -53,4 +53,4 @@ class Telegram:
         :param client_name: Name of the client ti display
         :return:
         """
-        self.send_notification(self.disconnect_alert.format(client_name))
+        self.send_notification(self.disconnect_alert.format(client_name=client_name))
