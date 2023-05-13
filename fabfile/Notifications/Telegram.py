@@ -13,7 +13,7 @@ class Telegram:
     parse_mode = "MarkdownV2"
     bot_token = ""
     chat_id = ""
-    url_notify_telegram = "https://api.telegram.org/bot{}/sendMessage"
+    url_notify_telegram = "https://api.telegram.org/bot{bot_token}/sendMessage"
 
     def __init__(self, settings_file):
         """
@@ -36,7 +36,7 @@ class Telegram:
         :return:
         """
         data = urllib.parse.urlencode({'chat_id': self.chat_id, 'text': message, 'parse_mode': self.parse_mode}).encode('ascii')
-        with urllib.request.urlopen(self.url_notify_telegram.format(self.bot_token), data) as f:
+        with urllib.request.urlopen(self.url_notify_telegram.format(bot_token=self.bot_token), data) as f:
             print(f.read().decode('utf-8'))
 
     def notify_connected(self, client_name):
