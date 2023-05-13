@@ -7,5 +7,5 @@ settings:
     client1_name : "<client ip>/32"
     client2_name : "<client ip>/32"
   telegram:
-    bot_token: "<telegram_bot_token"
+    bot_token: "<telegram_bot_token>"
     chat_id: "<telegram_chat_id>"
