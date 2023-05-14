@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='wireprobe',
-      version='0.1.3',
+      version='0.1.4',
       description='A wireguard probe',
       long_description="This package monitor wireguard client's tunnel if is up or down",
       author='Benjamin Gounine',
