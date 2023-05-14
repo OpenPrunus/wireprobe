@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(name='wireprobe',
-      version='0.1.9',
+      version='0.1.11',
       description='A wireguard probe',
       long_description="This package monitor wireguard client's tunnel if is up or down",
       author='Benjamin Gounine',
@@ -12,6 +12,6 @@ setup(name='wireprobe',
       python_requires='>3.9',
       install_requires=["decorator", "fabric", "invoke", "pyyaml", "urllib3"],
       packages=find_packages(),
-      package_dir={"wireprobe": "../wireprobe"},
+      package_dir={"wireprobe": "wireprobe"},
       include_package_data=True,
       )
