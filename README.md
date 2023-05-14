@@ -39,6 +39,13 @@ $ cd wireprobe
 $ fab run
 ```
 
+For INFO logs
+
+```shell
+$ cd wireprobe
+$ fab run -l 20
+```
+
 You can also set a different path for settings.yml
 
 ```shell
