@@ -1,8 +1,8 @@
 import datetime
 import os
 import time
-from wireprobe.Config.Config import Config
-from wireprobe.Notifications.Telegram import Telegram
+from .Config.Config import Config
+from .Notifications.Telegram import Telegram
 
 
 class HealthCheck:
@@ -23,7 +23,7 @@ class HealthCheck:
         :return:
         """
         if not settings_file:
-            settings_file = config_path=os.path.join(os.path.dirname(__file__), "settings.yml")
+            settings_file = config_path=os.path.join(os.path.dirname(__file__), "../settings.yml")
         settings = Config.load_yaml_config(config_path=settings_file)
         self.timeout = settings['settings']["timeout"]
         self.frequency_check = settings["settings"]["frequency_check"]
