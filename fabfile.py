@@ -1,4 +1,4 @@
-from .HealthCheck import HealthCheck
+from wireprobe.HealthCheck import HealthCheck
 import logging
 import os
 
