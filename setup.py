@@ -3,8 +3,9 @@
 from setuptools import setup
 
 setup(name='wireprobe',
-      version='0.1.2',
+      version='0.1.3',
       description='A wireguard probe',
+      long_description="This package monitor wireguard client's tunnel if is up or down",
       author='Benjamin Gounine',
       author_email='prunus@ecuri.es',
       url='https://github.com/OpenPrunus/wireprobe/',
