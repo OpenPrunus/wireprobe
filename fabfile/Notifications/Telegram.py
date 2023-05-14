@@ -8,8 +8,8 @@ class Telegram:
     """
     Telegram notification class
     """
-    connect_alert = "🐉 Wireguard: {client_name} is now connected"
-    disconnect_alert = "🐉 Wireguard: {client_name} is now disconnected"
+    connect_alert = "🐉 Wireguard: {client_name} tunnel is up"
+    disconnect_alert = "🐉 Wireguard: {client_name} tunnel potentially seems down"
     parse_mode = "MarkdownV2"
     bot_token = ""
     chat_id = ""
