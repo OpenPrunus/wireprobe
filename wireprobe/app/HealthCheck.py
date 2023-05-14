@@ -44,7 +44,7 @@ class HealthCheck:
         while True:
             time.sleep(self.frequency_check)
             for current_interface in self.interfaces:
-                result = os.popen("wg show {} dump | tail -n +2".format(current_interface)).readlines()
+                result = os.popen("wg show {interface} dump | tail -n +2".format(interface=current_interface)).readlines()
 
                 for line in result:
                     result_line_list = line.split("\t")
