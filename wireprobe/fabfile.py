@@ -1,9 +1,9 @@
 import logging
 import os
 
+from app.HealthCheck import HealthCheck
 from invoke import Collection, task
 
-from probe.HealthCheck import HealthCheck
 
 logging.basicConfig(format='[%(levelname)s] %(asctime)s: %(message)s', level=os.environ.get('VERBOSITY', 50))
 logger = logging.getLogger(__name__)
