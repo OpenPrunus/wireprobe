@@ -1,8 +1,8 @@
 import datetime
 import os
 import time
-from .Config.Config import Config
-from .Notifications.Telegram import Telegram
+from wireprobe.Config.Config import Config
+from wireprobe.Notifications.Telegram import Telegram
 
 
 class HealthCheck:

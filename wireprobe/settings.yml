@@ -1,0 +1,10 @@
+settings:
+  interfaces:
+    - wg0
+  frequency_check: 5
+  timeout: 5
+  clients:
+    prunustest : "0.0.0.0/0,::/0"
+  telegram:
+    bot_token: "5601507035:AAFTDa79hhr-umMwzRvSr9TDb6CRA_ovOp0"
+    chat_id: "-677368575"
