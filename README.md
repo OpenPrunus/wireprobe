@@ -3,6 +3,18 @@ A Wireguard Probe
 
 ## Installation
 
+### Pypi
+
+```shell
+$ python3 -m pip install wireprobe
+```
+
+and upgrading
+
+```shell
+$ python3 -m pip install wireprobe -U
+```
+
 ### Debian
 
 ```shell
@@ -17,18 +29,20 @@ python3 -m pip install -r requiremments
 ## Usage
 
 ```shell
-$ mv fabfile/settings.yml.example fabfile/settings.yml
+$ mv wireprobe/settings.yml.example wireprobe/settings.yml
 ```
 
-Set your configrations in `fabile/settings.yml`
+Set your configrations in `app/settings.yml`
 
 ```shell
+$ cd wireprobe
 $ fab run
 ```
 
 You can also set a different path for settings.yml
 
 ```shell
+$ cd wireprobe
 $ fab run -s /path/to/settings.yml
 ```
 
