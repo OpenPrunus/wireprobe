@@ -32,7 +32,7 @@ python3 -m pip install -r requiremments
 $ mv wireprobe/settings.yml.example wireprobe/settings.yml
 ```
 
-Set your configrations in `app/settings.yml`
+Set your configrations in `wireprobe/settings.yml`
 
 ```shell
 $ cd wireprobe
