@@ -1,4 +1,8 @@
 # wireprobe
+
+[![CI](https://github.com/OpenPrunus/wireprobe/actions/workflows/ci.yml/badge.svg)](https://github.com/OpenPrunus/wireprobe/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/wireprobe.svg)](https://pypi.org/project/wireprobe/)
+
 A Wireguard Probe
 
 ## Installation
@@ -33,6 +37,8 @@ $ echo "deb [signed-by=/usr/share/keyrings/wireprobe.gpg] https://openprunus.git
 $ sudo apt update
 $ sudo apt install wireprobe
 ```
+
+(Maintainers: see [packaging/apt/README.md](packaging/apt/README.md) for how the signing key and GitHub Pages publishing are set up.)
 
 Either way, then:
 
