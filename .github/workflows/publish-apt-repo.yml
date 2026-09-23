@@ -1,0 +1,74 @@
+name: Publish APT repository
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  publish-apt-repo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install build tooling
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ruby ruby-dev build-essential aptly gnupg
+          sudo gem install --no-document fpm
+
+      - name: Build current release .deb
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          mkdir -p all-debs
+          ./packaging/deb/build.sh "$VERSION" all-debs
+
+      - name: Download .deb from all other releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p historical-debs
+          for tag in $(gh release list --limit 1000 --json tagName -q '.[].tagName'); do
+            if [ "$tag" = "${GITHUB_REF_NAME}" ]; then
+              continue
+            fi
+            gh release download "$tag" --pattern '*.deb' --dir historical-debs --clobber || true
+          done
+          cp historical-debs/*.deb all-debs/ 2>/dev/null || true
+
+      - name: Import signing key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.APT_GPG_PRIVATE_KEY }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec/ {print $5; exit}')
+          echo "KEY_ID=$KEY_ID" >> "$GITHUB_ENV"
+
+      - name: Build and publish the APT repository
+        run: |
+          # A fresh aptly repo is (re)built from every known .deb on each
+          # run instead of persisting aptly's own state across CI runs;
+          # GitHub Releases is the durable source of truth for old versions.
+          aptly repo create -distribution=stable -component=main wireprobe
+          aptly repo add wireprobe all-debs
+          aptly publish repo -architectures=amd64,arm64 -gpg-key="$KEY_ID" wireprobe .
+
+          mkdir -p apt-build
+          cp -r "$HOME/.aptly/public/." apt-build/
+          gpg --armor --export "$KEY_ID" > apt-build/pubkey.gpg
+
+      - name: Publish to GitHub Pages (gh-pages branch)
+        run: |
+          cd apt-build
+          git init -q
+          git checkout -q -b gh-pages
+          git add -A
+          git -c user.name="github-actions[bot]" \
+              -c user.email="github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "Publish APT repo for ${GITHUB_REF_NAME}"
+          git push -q --force \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" \
+            gh-pages:gh-pages

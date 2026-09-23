@@ -19,8 +19,24 @@ $ python3 -m pip install wireprobe -U
 
 Every [release](https://github.com/OpenPrunus/wireprobe/releases) ships a `.deb` built by CI. It installs the app to `/usr/lib/wireprobe`, a `wireprobe` wrapper to `/usr/bin/wireprobe`, a `wireprobe` systemd service (enabled but not started), and creates the `wireprobe` system user.
 
+You can either download it from a release and install it directly:
+
 ```shell
 $ sudo apt install ./wireprobe_<version>_all.deb
+```
+
+or add the project's APT repository, signed and published by CI on GitHub Pages, to get updates via `apt upgrade`. It keeps every released version, so `apt install wireprobe=<version>` also works:
+
+```shell
+$ curl -fsSL https://openprunus.github.io/wireprobe/pubkey.gpg | sudo gpg --dearmor -o /usr/share/keyrings/wireprobe.gpg
+$ echo "deb [signed-by=/usr/share/keyrings/wireprobe.gpg] https://openprunus.github.io/wireprobe/ stable main" | sudo tee /etc/apt/sources.list.d/wireprobe.list
+$ sudo apt update
+$ sudo apt install wireprobe
+```
+
+Either way, then:
+
+```shell
 $ sudo cp /etc/wireprobe/settings.yml.example /etc/wireprobe/settings.yml
 # edit /etc/wireprobe/settings.yml with your configuration
 $ sudo systemctl start wireprobe
