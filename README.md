@@ -15,7 +15,20 @@ and upgrading
 $ python3 -m pip install wireprobe -U
 ```
 
-### Debian
+### Debian package (.deb)
+
+Every [release](https://github.com/OpenPrunus/wireprobe/releases) ships a `.deb` built by CI. It installs the app to `/usr/lib/wireprobe`, a `wireprobe` wrapper to `/usr/bin/wireprobe`, a `wireprobe` systemd service (enabled but not started), and creates the `wireprobe` system user.
+
+```shell
+$ sudo apt install ./wireprobe_<version>_all.deb
+$ sudo cp /etc/wireprobe/settings.yml.example /etc/wireprobe/settings.yml
+# edit /etc/wireprobe/settings.yml with your configuration
+$ sudo systemctl start wireprobe
+```
+
+Check status and logs with `systemctl status wireprobe` and `journalctl -u wireprobe -f`.
+
+### Debian (dependencies for a pip install)
 
 ```shell
 $ sudo apt install python3-urllib3 python3-requests python3-decorator python3-fabric python3-invoke python3-pyyaml-env-tag
@@ -68,9 +81,9 @@ $ pytest -v
 
 Unit tests live in `tests/unit`, functional (end-to-end) tests in `tests/functional`. Both run in CI on every push/PR to `main`.
 
-## Running as a systemd service
+## Running as a systemd service (manual / pip install)
 
-A unit file is provided in [packaging/systemd/wireprobe.service](packaging/systemd/wireprobe.service).
+If you installed from PyPI or a source checkout instead of the `.deb` (which already wires this up, see above), a unit file is provided in [packaging/systemd/wireprobe.service](packaging/systemd/wireprobe.service).
 
 ```shell
 $ sudo useradd --system --no-create-home wireprobe

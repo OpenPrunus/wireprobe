@@ -41,3 +41,18 @@ jobs:
 
       - name: Build package
         run: python -m build
+
+      - name: Build .deb package (validation)
+        if: matrix.python-version == '3.12'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ruby ruby-dev build-essential
+          sudo gem install --no-document fpm
+          ./packaging/deb/build.sh "0.0.0+ci.${{ github.run_number }}" dist-deb
+
+      - name: Upload .deb artifact
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: wireprobe-deb
+          path: dist-deb/*.deb
