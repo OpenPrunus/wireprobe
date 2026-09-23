@@ -14,6 +14,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Install build tooling
         run: |
@@ -29,7 +31,11 @@ jobs:
             # Manual run (e.g. to (re)publish after a key rotation, or to
             # create the gh-pages branch before Pages has been enabled):
             # use the latest tag instead of a release event's ref.
-            VERSION="$(git describe --tags --abbrev=0 | sed 's/^v//')"
+            if ! TAG="$(git describe --tags --abbrev=0)"; then
+              echo "::error::no git tag found (checkout needs fetch-depth: 0)"
+              exit 1
+            fi
+            VERSION="${TAG#v}"
           fi
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
