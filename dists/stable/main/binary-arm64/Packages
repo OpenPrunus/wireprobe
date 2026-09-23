@@ -1,0 +1,21 @@
+Package: wireprobe
+Priority: optional
+Section: net
+Installed-Size: 12
+Maintainer: Benjamin Gounine <prunus@ecuri.es>
+Architecture: all
+Version: 0.3
+Depends: python3, python3-yaml, python3-decorator, python3-fabric, python3-invoke, python3-urllib3, adduser
+Filename: pool/main/w/wireprobe/wireprobe_0.3_all.deb
+Size: 6150
+MD5sum: 586931cbf4630bf6ea60a93016ac356b
+SHA1: 32623df3a50c5caa572f64efc57ee03d47aa8baf
+SHA256: a5e2e531815fb464e1bbbf69311f804ee23f93f2fe8aa0b58fda5124dc95b200
+SHA512: dd14a14c9ea62ea25f57872bf6a2426639590b05dd18ae735b56efd6b95a4d47bac50ab34ba1df084aa25ca2ed3ec689a007c740626a045627eb084e2d081449
+Description: WireGuard tunnel health probe
+ Monitors WireGuard peer handshakes and sends a Telegram and/or
+ email notification when a client's tunnel goes up or down.
+Homepage: https://github.com/OpenPrunus/wireprobe/
+License: unknown
+Vendor: OpenPrunus
+
