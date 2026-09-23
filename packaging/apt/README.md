@@ -19,12 +19,25 @@ the workflow.
 ```shell
 $ gpg --batch --passphrase '' --quick-generate-key \
     "wireprobe APT repo <prunus@ecuri.es>" rsa4096 sign never
-$ KEY_ID=$(gpg --list-secret-keys --with-colons "prunus@ecuri.es" | awk -F: '/^sec/ {print $5; exit}')
+$ KEY_ID=$(gpg --list-secret-keys --with-colons "wireprobe APT repo" | awk -F: '/^sec/ {print $5; exit}')
 $ gpg --armor --export-secret-keys "$KEY_ID" > wireprobe-apt-private.asc
 ```
 
 `sign never` means the key never expires; adjust if you'd rather rotate it
 periodically. The empty passphrase is required so CI can sign non-interactively.
+
+Filter the lookup by the key's name (`"wireprobe APT repo"`), not by the bare
+email — if your keyring has other keys sharing that email address (personal
+keys, old/expired ones, ...), searching by email matches all of them and
+`awk ... exit` silently grabs whichever one `gpg` lists first, which may not
+be the key you just generated. Double-check before exporting:
+
+```shell
+$ gpg --list-secret-keys --with-colons "wireprobe APT repo"
+```
+
+should print exactly one `sec:` line, with `u` (ultimate) as its second
+field — not `e` (expired) or anything else.
 
 ## 2. Add it as a repository secret
 
