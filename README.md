@@ -58,3 +58,23 @@ $ fab run -s /path/to/settings.yml
 ```shell
 $ fab --help run
 ```
+
+## Running as a systemd service
+
+A unit file is provided in [packaging/systemd/wireprobe.service](packaging/systemd/wireprobe.service).
+
+```shell
+$ sudo useradd --system --no-create-home wireprobe
+$ sudo mkdir -p /opt/wireprobe /etc/wireprobe
+$ sudo cp -r . /opt/wireprobe
+$ sudo python3 -m venv /opt/wireprobe/venv
+$ sudo /opt/wireprobe/venv/bin/pip install -r /opt/wireprobe/requirements.txt fabric
+$ sudo cp wireprobe/settings.yml.example /etc/wireprobe/settings.yml
+# edit /etc/wireprobe/settings.yml with your configuration
+$ sudo chown -R wireprobe:wireprobe /opt/wireprobe /etc/wireprobe
+$ sudo cp packaging/systemd/wireprobe.service /etc/systemd/system/
+$ sudo systemctl daemon-reload
+$ sudo systemctl enable --now wireprobe
+```
+
+Check status and logs with `systemctl status wireprobe` and `journalctl -u wireprobe -f`.
