@@ -4,14 +4,13 @@ import urllib.request
 import urllib.parse
 
 from ..Config.Config import Config
+from .Base import Notifier
 
 
-class Telegram:
+class Telegram(Notifier):
     """
     Telegram notification class
     """
-    connect_alert = "🐉 Wireguard: {client_name} tunnel is up"
-    disconnect_alert = "🐉 Wireguard: {client_name} tunnel potentially seems down"
     parse_mode = "MarkdownV2"
     bot_token = ""
     chat_id = ""
@@ -43,19 +42,3 @@ class Telegram:
         data = urllib.parse.urlencode({'chat_id': self.chat_id, 'text': message, 'parse_mode': self.parse_mode}).encode('ascii')
         with urllib.request.urlopen(self.url_notify_telegram.format(bot_token=self.bot_token), data) as f:
             self.logger.info(f.read().decode('utf-8'))
-
-    def notify_connected(self, client_name):
-        """
-        Notify connected method to send message connection to telegram
-        :param client_name: Name of the client ti display
-        :return:
-        """
-        self.send_notification(self.connect_alert.format(client_name=client_name))
-
-    def notify_disconnected(self, client_name):
-        """
-        Notify disconnected method to send message disconnection to telegram
-        :param client_name: Name of the client ti display
-        :return:
-        """
-        self.send_notification(self.disconnect_alert.format(client_name=client_name))

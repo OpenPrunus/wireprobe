@@ -5,6 +5,7 @@ import time
 
 from .Config.Config import Config
 from .Notifications.Telegram import Telegram
+from .Notifications.Email import Email
 
 
 class HealthCheck:
@@ -16,7 +17,7 @@ class HealthCheck:
     interfaces = []
     timeout = 1
     frequency_check = 5
-    telegram = None
+    notifiers = []
     logger = None
 
     def __init__(self, settings_file="", log_level=30):
@@ -34,9 +35,14 @@ class HealthCheck:
         self.timeout = settings['settings']["timeout"]
         self.frequency_check = settings["settings"]["frequency_check"]
         self.client_list = {v: k for k, v in settings["settings"]["clients"].items()}
+        self.is_connected_client_list = {}
         for client in self.client_list:
             self.is_connected_client_list[self.client_list[client]] = False
-        self.telegram = Telegram(settings_file, self.logger)
+        self.notifiers = []
+        if 'telegram' in settings['settings']:
+            self.notifiers.append(Telegram(settings_file, self.logger))
+        if 'email' in settings['settings']:
+            self.notifiers.append(Email(settings_file, self.logger))
         self.interfaces = settings['settings']['interfaces']
         # Debug content vars
         self.logger.debug("client_list = {client_list}\n"
@@ -58,26 +64,36 @@ class HealthCheck:
 
         while True:
             time.sleep(self.frequency_check)
-            for current_interface in self.interfaces:
-                result = os.popen("wg show {interface} dump | tail -n +2".format(interface=current_interface)).readlines()
+            self.check_once()
 
-                for line in result:
-                    result_line_list = line.split("\t")
-                    if result_line_list[3] not in self.client_list:
-                        continue
-                    current_client_name = self.client_list[result_line_list[3]]
-                    self.logger.info("current client check : {current_client_name}".format(
-                        current_client_name=current_client_name)
-                    )
-                    now = datetime.datetime.now()
-                    last_seen = datetime.datetime.fromtimestamp(int(result_line_list[4]))
-                    d1_ts = time.mktime(now.timetuple())
-                    d2_ts = time.mktime(last_seen.timetuple())
-                    minutes_diff = (d1_ts - d2_ts) / 60
-                    self.logger.info("Last refreshed handshake : {last_seen}\nLong ago : {diff}".format(last_seen=last_seen, diff=minutes_diff))
-                    if minutes_diff > self.timeout and self.is_connected_client_list[current_client_name]:
-                        self.is_connected_client_list[current_client_name] = False
-                        self.telegram.notify_disconnected(client_name=current_client_name)
-                    elif minutes_diff < self.timeout and not self.is_connected_client_list[current_client_name]:
-                        self.is_connected_client_list[current_client_name] = True
-                        self.telegram.notify_connected(client_name=current_client_name)
+    def check_once(self):
+        """
+        Run a single pass over all configured interfaces/clients and
+        fire notifications on state changes.
+        :return:
+        """
+        for current_interface in self.interfaces:
+            result = os.popen("wg show {interface} dump | tail -n +2".format(interface=current_interface)).readlines()
+
+            for line in result:
+                result_line_list = line.split("\t")
+                if result_line_list[3] not in self.client_list:
+                    continue
+                current_client_name = self.client_list[result_line_list[3]]
+                self.logger.info("current client check : {current_client_name}".format(
+                    current_client_name=current_client_name)
+                )
+                now = datetime.datetime.now()
+                last_seen = datetime.datetime.fromtimestamp(int(result_line_list[4]))
+                d1_ts = time.mktime(now.timetuple())
+                d2_ts = time.mktime(last_seen.timetuple())
+                minutes_diff = (d1_ts - d2_ts) / 60
+                self.logger.info("Last refreshed handshake : {last_seen}\nLong ago : {diff}".format(last_seen=last_seen, diff=minutes_diff))
+                if minutes_diff > self.timeout and self.is_connected_client_list[current_client_name]:
+                    self.is_connected_client_list[current_client_name] = False
+                    for notifier in self.notifiers:
+                        notifier.notify_disconnected(client_name=current_client_name)
+                elif minutes_diff < self.timeout and not self.is_connected_client_list[current_client_name]:
+                    self.is_connected_client_list[current_client_name] = True
+                    for notifier in self.notifiers:
+                        notifier.notify_connected(client_name=current_client_name)

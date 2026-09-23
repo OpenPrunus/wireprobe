@@ -6,6 +6,16 @@ settings:
   clients:
     client1_name : "<client ip>/32"
     client2_name : "<client ip>/32"
+  # notification channels are optional, remove the sections you don't use
   telegram:
     bot_token: "<telegram_bot_token>"
     chat_id: "<telegram_chat_id>"
+  email:
+    smtp_host: "<smtp host>"
+    smtp_port: 587
+    use_tls: true
+    username: "<smtp username>"
+    password: "<smtp password>"
+    from_addr: "<from address>"
+    to_addrs:
+      - "<to address>"
