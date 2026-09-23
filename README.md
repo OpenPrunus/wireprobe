@@ -5,6 +5,44 @@
 
 A Wireguard Probe
 
+## How it works
+
+wireprobe polls the local WireGuard interfaces on a schedule and watches, for
+each peer you've told it to care about, how long it's been since that peer's
+last handshake. When that goes above a threshold it fires a "disconnected"
+notification; when a handshake shows up again within the threshold, it fires
+a "connected" one.
+
+Concretely, on every tick:
+
+1. It runs `wg show <interface> dump` for each configured interface — this
+   dumps every peer's `AllowedIPs` and the timestamp of its last handshake.
+2. For each peer line, it looks up the peer by matching `AllowedIPs` against
+   the `clients` map in your config (see [Configuration](#configuration)
+   below) — peers not listed there are ignored.
+3. It computes `now - last_handshake` in minutes and compares it to
+   `timeout`:
+   - if it just crossed *above* `timeout` and the client was marked as up,
+     it's marked down and every configured notifier fires
+     `notify_disconnected`.
+   - if it just crossed *below* `timeout` and the client was marked as down
+     (which includes "never seen since this process started"), it's marked
+     up and every notifier fires `notify_connected`.
+4. It sleeps `frequency_check` seconds and repeats — forever, in the
+   foreground (that's what the systemd units and `.deb` wrap).
+
+A couple of things worth knowing:
+
+- State is only kept in memory. A restart forgets who was up or down, so the
+  first poll after a (re)start can send a spurious "connected" notification
+  for every peer that happens to already be within `timeout` — it doesn't
+  know that peer didn't just reconnect.
+- Notifications go out to *every* channel you've configured (Telegram and/or
+  email) on every state change — there's no per-channel filtering.
+- Matching is purely on the `AllowedIPs` string reported by `wg show`, so it
+  has to match exactly what's in `clients` (see below) — usually the peer's
+  tunnel IP with a `/32`.
+
 ## Installation
 
 ### Pypi
@@ -61,13 +99,58 @@ $ sudo apt install python3-urllib3 python3-requests python3-decorator python3-fa
 python3 -m pip install -r requiremments
 ```
 
-## Usage
+## Configuration
 
 ```shell
 $ mv wireprobe/settings.yml.example wireprobe/settings.yml
 ```
 
-Set your configrations in `wireprobe/settings.yml`
+then edit `wireprobe/settings.yml` (or `/etc/wireprobe/settings.yml` for the
+`.deb`/systemd installs). Full example:
+
+```yaml
+settings:
+  interfaces:
+    - wg0                       # every "wg show <iface> dump" to poll
+  frequency_check: 30           # seconds between polls
+  timeout: 3                    # minutes of handshake silence before a peer is "down"
+
+  clients:
+    alice-laptop: "10.20.0.2/32"   # must match AllowedIPs from `wg show wg0 dump`
+    bob-phone: "10.20.0.3/32"
+
+  # Both notification channels are optional and independent — configure
+  # either one, both, or neither (in which case state changes are only
+  # logged, not notified).
+
+  telegram:
+    bot_token: "123456789:AAExampleTokenGoesHere"
+    chat_id: "-1001234567890"
+
+  email:
+    smtp_host: "smtp.example.com"
+    smtp_port: 587               # 465 -> implicit TLS (SMTPS); otherwise STARTTLS unless use_tls: false
+    use_tls: true
+    username: "wireprobe@example.com"   # omit to skip SMTP auth entirely
+    password: "app-specific-password"
+    from_addr: "wireprobe@example.com"
+    to_addrs:                    # a single string also works, not just a list
+      - "admin@example.com"
+      - "oncall@example.com"
+```
+
+Field reference:
+
+| Field | Meaning |
+| --- | --- |
+| `interfaces` | WireGuard interface names on this host to poll, as `wg show interfaces` lists them. |
+| `frequency_check` | Seconds to sleep between polls. |
+| `timeout` | Minutes since a peer's last handshake before it's considered disconnected. |
+| `clients` | Maps a friendly name to a peer's `AllowedIPs` value — find it with `wg show <iface> dump` or `wg show <iface> allowed-ips`. |
+| `telegram.bot_token` / `chat_id` | Create a bot via [@BotFather](https://t.me/BotFather); get the target `chat_id` by messaging the bot and checking `getUpdates`, or via [@userinfobot](https://t.me/userinfobot) for a personal chat. |
+| `email.*` | Standard SMTP settings; see the notes above for `smtp_port`/`use_tls`/`username` behavior. |
+
+Once configured:
 
 ```shell
 $ cd wireprobe
