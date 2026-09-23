@@ -28,13 +28,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install flake8 build
+          pip install flake8 build pytest
 
       - name: Lint (fail on syntax errors / undefined names)
         run: flake8 wireprobe --count --select=E9,F63,F7,F82 --show-source --statistics
 
       - name: Lint (style, non-blocking)
         run: flake8 wireprobe --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Run unit and functional tests
+        run: pytest -v
 
       - name: Build package
         run: python -m build

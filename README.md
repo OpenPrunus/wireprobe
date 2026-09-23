@@ -59,6 +59,15 @@ $ fab run -s /path/to/settings.yml
 $ fab --help run
 ```
 
+## Testing
+
+```shell
+$ python3 -m pip install -r requirements.txt pytest
+$ pytest -v
+```
+
+Unit tests live in `tests/unit`, functional (end-to-end) tests in `tests/functional`. Both run in CI on every push/PR to `main`.
+
 ## Running as a systemd service
 
 A unit file is provided in [packaging/systemd/wireprobe.service](packaging/systemd/wireprobe.service).
