@@ -1,4 +1,7 @@
 #!/bin/sh
 set -e
 cd /usr/lib/wireprobe
-exec fab "$@"
+# Debian's python3-fabric ships the library only, not the /usr/bin/fab
+# console script (unlike a pip install), so call Fabric's Program directly
+# instead of depending on a `fab` binary that isn't on $PATH.
+exec python3 -c "from fabric.main import program; program.run()" "$@"

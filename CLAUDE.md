@@ -67,3 +67,10 @@ flake8 wireprobe --count --select=E9,F63,F7,F82 --show-source --statistics
   name/comment instead, and sanity-check there's exactly one match before
   exporting — a stale/expired key silently winning this lookup is exactly
   what caused the "Unusable secret key" failure above, twice.
+- Debian's `python3-fabric`/`python3-invoke` packages (declared as `--depends`
+  in `packaging/deb/build.sh`) ship the library only, not a `/usr/bin/fab`
+  console script — unlike a `pip install fabric`, which does. The `.deb`
+  installs "successfully" but `packaging/deb/wireprobe` crash-loops with
+  `exec: fab: not found` (exit 127) the moment systemd starts it. Fixed by
+  having the wrapper call Fabric's `Program` directly instead of the missing
+  binary: `python3 -c "from fabric.main import program; program.run()" "$@"`.
