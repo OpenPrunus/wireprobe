@@ -1,0 +1,42 @@
+Package: wireprobe
+Priority: optional
+Section: net
+Installed-Size: 12
+Maintainer: Benjamin Gounine <prunus@ecuri.es>
+Architecture: all
+Version: 0.3.1
+Depends: python3, python3-yaml, python3-decorator, python3-fabric, python3-invoke, python3-urllib3, adduser
+Filename: pool/main/w/wireprobe/wireprobe_0.3.1_all.deb
+Size: 6278
+MD5sum: e822315585a0d51d71c2d2a890364eb3
+SHA1: 00848f8208a817be7002dacb213ee4be28c7b91c
+SHA256: 25f38babc9e803b43a2776679c8b5917c748e49bb9a1e0d9ae9b7a1242f8b7c2
+SHA512: 66cf6c498c4f44638179496f81f48c6518c93816fc1a769b4ba0faeb9388b1be4387b1b913b431619ead1efd1d1449e4252b992095f9763aaf2f91957364f00b
+Description: WireGuard tunnel health probe
+ Monitors WireGuard peer handshakes and sends a Telegram and/or
+ email notification when a client's tunnel goes up or down.
+Homepage: https://github.com/OpenPrunus/wireprobe/
+License: unknown
+Vendor: OpenPrunus
+
+Package: wireprobe
+Priority: optional
+Section: net
+Installed-Size: 12
+Maintainer: Benjamin Gounine <prunus@ecuri.es>
+Architecture: all
+Version: 0.3
+Depends: python3, python3-yaml, python3-decorator, python3-fabric, python3-invoke, python3-urllib3, adduser
+Filename: pool/main/w/wireprobe/wireprobe_0.3_all.deb
+Size: 6132
+MD5sum: c86c565aa3c50350709fb2c33532a50a
+SHA1: ffd14e3b8ef467d57497da7936713d7b343f0131
+SHA256: f6714841081d3dd653ae9746d5d29a5258ed986396de326bdd7ab2f0cafff6d4
+SHA512: 40ee9fa147312f9310fcf38a2fe47a8685c533f14ffadc62680693e682ade1fef744afe6856c883d4f9193c9aba6e00e2a1474d9c686e07f94e22b60d006c2a4
+Description: WireGuard tunnel health probe
+ Monitors WireGuard peer handshakes and sends a Telegram and/or
+ email notification when a client's tunnel goes up or down.
+Homepage: https://github.com/OpenPrunus/wireprobe/
+License: unknown
+Vendor: OpenPrunus
+
